@@ -1,20 +1,25 @@
-
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { RouterProvider } from 'react-router-dom'
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import { RouterProvider } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
-import { appRouter } from './App.jsx'
+import { appRouter } from './App.jsx';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import store, { persistor } from './utils/appStore.js';
+
 createRoot(document.getElementById('root')).render(
-    <Auth0Provider
-        domain="dev-ticbss1kiwcuz4sb.au.auth0.com"
-        clientId="Cl2YFyWlPApIuha6Oucj85GNgQ7D9SVX"
-        authorizationParams={{
-        redirect_uri: window.location.origin,
-        audience: "https://dev-ticbss1kiwcuz4sb.au.auth0.com/api/v2/"
-    }}>
-       
-            
-            <RouterProvider router={appRouter}/>
-           
-    </Auth0Provider>
-)
+  <Auth0Provider
+    domain={import.meta.env.VITE_DOMAIN}
+    clientId={import.meta.env.VITE_CLIENTID}
+    authorizationParams={{
+      redirect_uri: window.location.origin,
+      audience: import.meta.env.VITE_AUDIENCE,
+    }}
+  >
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <RouterProvider router={appRouter} />
+      </PersistGate>
+    </Provider>
+  </Auth0Provider>
+);

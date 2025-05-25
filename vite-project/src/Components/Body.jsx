@@ -44,7 +44,7 @@ const Body = () => {
     const fetchCart = async () => {
         try {
             const token = await getAccessTokenSilently();
-            const response = await axios.get('http://localhost:3010/cartService/api/v1/cartItems', {
+            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/cartService/api/v1/cartItems`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -60,7 +60,8 @@ const Body = () => {
             // Add new items if not already in Redux
             dispatch(clearCart()); // always clear old cart
             newItems.forEach(item => {
-                dispatch(addItem({ ...item, quantity: 1 }));
+         
+                dispatch(addItem({ ...item, quantity: item.quantity }));
             });
 
 
@@ -74,7 +75,7 @@ const Body = () => {
             setIsFetching(true);
             if (isAuthenticated) {
                 const accessToken = await getAccessTokenSilently();
-                const response = await fetch("http://localhost:3010/productService/api/user/get-all-products", {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/productService/api/user/get-all-products`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${accessToken}`
@@ -148,6 +149,7 @@ const Body = () => {
                                 price={product.price || "Unavailable"}
                                 color={product.variants?.length || 0}
                                 imageUrl={product?.variants?.[0]?.images[0]?.imageUrl || 'https://t3.ftcdn.net/jpg/04/34/72/82/360_F_434728286_OWQQvAFoXZLdGHlObozsolNeuSxhpr84.jpg'}
+                                productId ={product.id}
                             />
                         </Link>
                     ))

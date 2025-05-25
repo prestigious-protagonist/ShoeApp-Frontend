@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
 import { useDispatch } from "react-redux";
 import { addItem } from "../utils/cartSlice";
-
-import { toast } from 'react-toastify';
+import { handleAddItem } from '../utils/addToCart';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Shoemenu = () => {
@@ -22,7 +21,7 @@ const Shoemenu = () => {
 
             try {
                 const accessToken = await getAccessTokenSilently();
-                const response = await fetch(`http://localhost:3010/productService/api/user/get-by-Id/${params.shoeId}`, {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/productService/api/user/get-by-Id/${params.shoeId}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${accessToken}`
@@ -75,50 +74,9 @@ const ShoeProduct = ({ product, selectedVariant, setSelectedVariant, selectedIma
     const dispatch = useDispatch();
 
     const { getAccessTokenSilently} = useAuth0();
-    function handleAddItem() {
-        const cartData = {
-            shoeId: shoeInfo.id,
-            variantId: selectedVariant.id,
-            size: selectedSize,
-            imageUrl: selectedImage,
-            price: price,
-        };
-        console.log("card Data: "+JSON.stringify(cartData,  null, 2))
-        // POST request to add the item to the database (cart or order table)
-        const postData = async () => {
-            try {
-                const accessToken = await getAccessTokenSilently();
-                console.log("Sel variant tis " +JSON.stringify(selectedVariant , null , 2))
-                const response = await fetch('http://localhost:3010/cartService/api/v1/addProduct', {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ variantId: selectedVariant.id }) // 👈 correctly placed
-                });
-                
-
-                if (!response.ok) {
-                    console.error("Failed to add item to cart");
-                    toast.error("Couldn't add to cart at the moment")
-                    return;
-                }
-
-                const data = await response.json();
-                console.log("Item added to cart:", data);
-
-                if (data.success) {
-                    toast.success(data.message)
-                    dispatch(addItem(cartData));  // Update Redux store with cart data
-                }
-            } catch (error) {
-                console.error("Error adding item to cart:", error);
-            }
-        };
-
-        postData();
-    }
+    
+    
+    
 
     // Extract all unique sizes across variants
     const allSizes = Array.from(
@@ -225,7 +183,16 @@ const ShoeProduct = ({ product, selectedVariant, setSelectedVariant, selectedIma
                     
                     <button className="w-full  inline-flex h-12 animate-shimmer items-center hover:opacity-90 justify-center rounded-lg border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-50" 
                     disabled={!isProductAvailable}
-                    onClick={() => { handleAddItem() }}>
+                    onClick={() => { handleAddItem({
+                        shoeInfo,
+                        selectedVariant,
+                        selectedSize,
+                        selectedImage,
+                        price,
+                        dispatch,
+                        getAccessTokenSilently,
+                        addItem
+                    }) }}>
                             Add to cart
                     </button>
 

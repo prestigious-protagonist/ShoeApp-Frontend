@@ -3,17 +3,87 @@ import AspectRatio from '@mui/joy/AspectRatio';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import IconButton from '@mui/joy/IconButton';
+import { Star } from 'lucide-react';
+import { useEffect } from 'react';
 import Typography from '@mui/joy/Typography';
+import { useState } from 'react';
 import ShoppingCartOutlined from '@mui/icons-material/ShoppingCartOutlined';
-import { Category } from '@mui/icons-material';
-//import { useDispatch } from 'react-redux';
-//import { addItem } from '../utils/cartSlice';
-export default function ProductCard({ name, brand, category, price, color, imageUrl }) {
-  //const dispatch = useDispatch()
-  // function handleAddItem(item) {
-  //     console.log("Structure"+JSON.stringify(item, null ,2))
-  //     dispatch(addItem(item))
-  // }
+// Import Axios or your API call method
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
+import { toast } from 'react-toastify';
+export default function ProductCard({ name, brand, category, price, color, imageUrl, productId }) {
+  
+  const [isFavorite, setIsFavorite] = useState(false);
+  console.log(isFavorite);
+  const { getAccessTokenSilently } = useAuth0();
+
+
+  useEffect(() => {
+    const checkIfFavorite = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/productService/api/user/checkFavourite/${productId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.data.success) {
+          setIsFavorite(true);
+        }
+      } catch (err) {
+        console.error('Error checking favorite status:', err);
+      }
+    };
+  
+    checkIfFavorite();
+  }, [getAccessTokenSilently, productId]);
+  const handleToggleFavorite = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const token = await getAccessTokenSilently();
+  
+      if (isFavorite) {
+        // Remove from favorites
+        const res = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/productService/api/user/removeFavourite/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (res.data.success) {
+          setIsFavorite(false);
+          toast('Removed from Favorites!');
+        } else {
+          toast('Failed to remove from favorites');
+        }
+  
+      } else {
+        // Add to favorites
+        const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/productService/api/user/addToFavourites/${productId}`, null, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (res.status === 201) {
+          setIsFavorite(true);
+          toast.success('Added to Favorites!');
+        } else {
+          toast.error('Failed to add to favorites');
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
+      toast.error('Something went wrong.');
+    }
+  };
+  
+
   return (
     <Card
       sx={{
@@ -25,12 +95,11 @@ export default function ProductCard({ name, brand, category, price, color, image
         backgroundColor: 'white',
         cursor: 'pointer',
       }}
-       // Makes the entire card clickable
     >
       {/* Cart Icon (Top Right) */}
       <IconButton
   variant="soft"
-  color="neutral"
+  color={isFavorite ? 'warning' : 'neutral'}
   size="md"
   sx={{
     position: 'absolute',
@@ -41,14 +110,12 @@ export default function ProductCard({ name, brand, category, price, color, image
     zIndex: 10,
     boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
   }}
-  aria-label="Add to cart"
-  onClick={(e) => {
-    e.preventDefault()
-    //handleAddItem({ name, brand, category, price, color, imageUrl })
-  }}
+  aria-label="Toggle Favorite"
+  onClick={handleToggleFavorite}
 >
-  <ShoppingCartOutlined />
+  <Star fill={isFavorite ? 'orange' : 'none'} />
 </IconButton>
+
 
 
       {/* Image Section */}
@@ -56,7 +123,7 @@ export default function ProductCard({ name, brand, category, price, color, image
         <img
           src={imageUrl}
           loading="lazy"
-          alt="Shoe Image"
+          alt="Product Image"
           style={{ objectFit: 'cover' }}
         />
       </AspectRatio>
@@ -70,15 +137,15 @@ export default function ProductCard({ name, brand, category, price, color, image
           {category}
         </Typography>
         <Typography level="body-sm" sx={{ color: 'gray', mb: 1 }}>
-          {color} {color>1?" Colours":" Colour"}
+          {color} {color > 1 ? 'Colours' : 'Colour'}
         </Typography>
 
         {/* Pricing */}
         <Typography sx={{ fontWeight: 'bold', fontSize: 'lg' }}>
-          {"₹ "+price}
+          {'₹ ' + price}
         </Typography>
         <Typography sx={{ fontSize: 'sm', color: 'gray' }}>
-          MRP: ₹ {price+ 0.2*price}.00
+          MRP: ₹ {price + 0.2 * price}.00
         </Typography>
       </CardContent>
     </Card>
