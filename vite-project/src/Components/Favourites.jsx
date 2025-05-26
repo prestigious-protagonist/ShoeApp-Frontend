@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
-import FavCard from './favCard';  // Use the correct case for the import
+import FavCard from './FavCard';  
 import {  useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { removeItem } from '../utils/cartSlice';
