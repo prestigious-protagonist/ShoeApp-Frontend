@@ -15,6 +15,9 @@ createRoot(document.getElementById('root')).render(
       redirect_uri: window.location.origin,
       audience: import.meta.env.VITE_AUDIENCE,
     }}
+    cacheLocation="localstorage"
+    useRefreshTokens = {true}
+
   >
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
