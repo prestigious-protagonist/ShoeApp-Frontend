@@ -18,6 +18,11 @@ import PlaceOrder from "./Page/placeOrder"
 import Orders from "./Page/Orders"
 import ProtectedRoute from "./Components/ProtectedRoute"
 import Dashboard from "./Page/Dashboard"
+import AdminRoute from "./Admin/AdminProtectedRoute"
+import MyUploads from "./Admin/MyUploads"
+import AddProduct from "./Admin/AddProduct"
+import VariantInput from "./Admin/VariantInput"
+import UploadImage from "./Admin/uploadImage"
 function App() {
   
   return (
@@ -76,6 +81,41 @@ export const appRouter = createBrowserRouter([
         </ProtectedRoute >
     ),
       }, 
+      {
+  path: '/admin',
+  element: (
+    <AdminRoute>
+      <Outlet />
+    </AdminRoute>
+  ),
+  children: [
+    {
+      path:'uploads', // 
+      element: <Outlet />,
+      children:[
+        {
+          path: '',
+          element: <MyUploads />
+        },
+        {
+          path: 'addVariant/:shoeId', // /admin/settings
+          element: <VariantInput />
+        },
+        {
+          path: 'variants/:shoeId', // /admin/settings
+          element: <UploadImage />
+        },
+        
+    ]
+    },
+    {
+      path: 'addProduct', 
+      element: <AddProduct />
+    },
+    
+  ]
+}
+
     ],
     errorElement: <Error />
   }

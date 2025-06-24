@@ -7,9 +7,11 @@ import { X } from 'lucide-react';
 const Orders = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState({ visible: false, orderId: null });
 
   const fetchOrders = async () => {
+    setLoading(true);
     try {
       const token = await getAccessTokenSilently();
       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orderService/api/v1/myOrders`, {
@@ -19,14 +21,13 @@ const Orders = () => {
       });
 
       const orderData = res.data?.data || [];
-
       const enrichedOrders = await Promise.all(
         orderData.map(async (order) => {
           const enrichedItems = await Promise.all(
             order.items.map(async (item) => {
               try {
                 const shoeRes = await axios.get(
-                  `${import.meta.env.VITE_API_BASE_URL}/productService/api/user/get-by-Id/${item.shoeId}`,
+                  `${import.meta.env.VITE_API_BASE_URL}/productService/api/user/get-by-variantId/${item.variantId}`,
                   {
                     headers: {
                       Authorization: `Bearer ${token}`,
@@ -51,6 +52,8 @@ const Orders = () => {
     } catch (error) {
       toast.error('Failed to fetch orders.');
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,9 +89,16 @@ const Orders = () => {
   const deliveredOrders = orders.filter(order => order.deliveryStatus);
   const pendingOrders = orders.filter(order => !order.deliveryStatus);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex gap-6 p-6 max-w-7xl mx-auto relative">
-      {/* Delete Confirmation Modal */}
       {deleteModal.visible && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md">
@@ -150,10 +160,9 @@ const Orders = () => {
           <p className="text-gray-500">You don't have any pending orders.</p>
         ) : (
           pendingOrders.map(order => (
-            <div key={order.id} className="mb-8 border p-4  rounded-md bg-white shadow-sm relative">
-              {/* ❌ Delete Button */}
+            <div key={order.id} className="mb-8 border p-4 rounded-md bg-white shadow-sm relative">
               <button
-                className="absolute top-2 right-2 bottom-1 text-gray-400 hover:text-red-500"
+                className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
                 onClick={() => confirmDelete(order.id)}
                 title="Delete Order"
               >

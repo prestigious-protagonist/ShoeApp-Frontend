@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
-import { X } from 'lucide-react'; // For close icon
+import { X } from 'lucide-react';
+import { updateItemSize } from '../utils/cartSlice'; // Adjust path as per your project
 
 const PlaceOrder = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { getAccessTokenSilently } = useAuth0();
 
   const [couponCode, setCouponCode] = useState('');
@@ -22,7 +24,7 @@ const PlaceOrder = () => {
       try {
         const token = await getAccessTokenSilently();
         const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orderService/api/v1/promoMessage`, {
-          headers: {Authorization: `Bearer ${token}`}
+          headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data?.message) {
           setPromoMessage(res.data.message);
@@ -32,7 +34,7 @@ const PlaceOrder = () => {
       }
     };
     fetchPromoMessage();
-  }, []);
+  }, [getAccessTokenSilently]);
 
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.data?.shoe?.price * (item.quantity || 1),
@@ -54,9 +56,7 @@ const PlaceOrder = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/orderService/api/v1/applyCoupon/${couponCode}`, {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
@@ -88,11 +88,11 @@ const PlaceOrder = () => {
 
     try {
       const token = await getAccessTokenSilently();
-
+      console.log(cartItems)
       const orderPayload = {
         items: cartItems.map(item => ({
           shoeId: item.data.shoeId,
-          variantId: item.id,
+          variantId: item.shoevariantsId,
           quantity: item.quantity,
           size: item.size,
           pricePerUnit: item.data?.shoe?.price,
@@ -106,9 +106,7 @@ const PlaceOrder = () => {
         `${import.meta.env.VITE_API_BASE_URL}/orderService/api/v1/placeOrder`,
         orderPayload,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
@@ -118,6 +116,10 @@ const PlaceOrder = () => {
       console.error("Order error:", error);
       toast.error("Failed to place order.");
     }
+  };
+
+  const handleSizeChange = (id, selectedSize) => {
+    dispatch(updateItemSize({ id, size: selectedSize }));
   };
 
   return (
@@ -132,8 +134,7 @@ const PlaceOrder = () => {
             {cartItems.map((item, index) => (
               <div
                 key={index}
-                className="flex justify-between items-center border-b py-4 cursor-pointer"
-                onClick={() => navigate(`/shoes/${item.data.shoeId}`)}
+                className="flex justify-between items-center border-b py-4"
               >
                 <div className="flex items-center gap-4">
                   <img
@@ -148,6 +149,20 @@ const PlaceOrder = () => {
                     <p className="text-sm text-gray-600">
                       Quantity: {item.quantity} × ${item.data?.shoe?.price}
                     </p>
+                    <div className="mt-1">
+                      <select
+                        value={item.size || ''}
+                        onChange={(e) => handleSizeChange(item.id, e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 text-sm"
+                      >
+                        <option value="">Select size</option>
+                        {item.data?.sizes?.map((sizeObj, idx) => (
+                          <option key={idx} value={sizeObj.size}>
+                            {sizeObj.size}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div className="text-sm font-semibold">
@@ -160,7 +175,6 @@ const PlaceOrder = () => {
           <div className="bg-gray-100 p-4 rounded-md">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
-            {/* Coupon Input */}
             <div className="flex items-center mb-4 gap-2">
               <input
                 type="text"
@@ -211,7 +225,6 @@ const PlaceOrder = () => {
         </>
       )}
 
-      {/* Sticky Promo Message */}
       {promoMessage && showPromo && (
         <div className="fixed bottom-4 left-4 bg-blue-100 text-blue-800 px-4 py-3 rounded-lg shadow-lg max-w-sm flex items-start gap-3 z-50">
           <span className="flex-1 text-sm">{promoMessage}</span>

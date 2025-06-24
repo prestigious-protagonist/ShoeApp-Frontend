@@ -32,7 +32,7 @@ const Body = () => {
                 // Re-fetch cart every 10 seconds
                 intervalId = setInterval(() => {
                     fetchCart();
-                }, 10000);
+                }, 100000);
             }
         };
 
@@ -42,33 +42,38 @@ const Body = () => {
     }, [isAuthenticated, isLoading]);
 
     const fetchCart = async () => {
-        try {
-            const token = await getAccessTokenSilently();
-            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/cartService/api/v1/cartItems`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+  try {
+    const token = await getAccessTokenSilently();
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/cartService/api/v1/cartItems`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-            const newItems = response.data?.data?.[0] || [];
+    const newItems = response.data?.data?.[0] || [];
 
-            // Clear if no items left in DB
-            if (newItems.length === 0 && cartItems.length > 0) {
-                dispatch(clearCart());
-            }
+    // Create a reference to old items to preserve their selected size
+    const oldItemsMap = new Map(cartItems.map(item => [item.id, item.size]));
 
-            // Add new items if not already in Redux
-            dispatch(clearCart()); // always clear old cart
-            newItems.forEach(item => {
-         
-                dispatch(addItem({ ...item, quantity: item.quantity }));
-            });
+    dispatch(clearCart());
 
+    newItems.forEach(item => {
+      const preservedSize = oldItemsMap.get(item.id) || null;
 
-        } catch (error) {
-            console.error('Failed to fetch cart items:', error);
-        }
-    };
+      dispatch(addItem({
+        ...item,
+        quantity: item.quantity,
+        size: preservedSize,  // Preserve previously selected size if exists
+      }));
+    });
+
+  } catch (error) {
+    console.error('Failed to fetch cart items:', error);
+  }
+};
 
     const fetchData = async () => {
         try {

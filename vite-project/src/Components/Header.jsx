@@ -23,6 +23,7 @@ import {
     { name: 'Cart', href: '/cart', current: false },
     { name: 'Favourites', href: '/favourites', current: false },
     { name: 'About', href: '/about', current: false },
+    { name: 'Orders', href: '/orders', current: false },    
     { name: 'Contacts', href: '/contact', current: false },
     { name: 'Status', href: '/', current: true}
   ];

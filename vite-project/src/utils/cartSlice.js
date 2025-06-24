@@ -63,14 +63,15 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
     },
-    updateItemSize: (state, action) => {
-  const { id, size } = action.payload;
-  const item = state.items.find(item => item.id === id);
-  if (item) {
-    item.size = size;
-  }
-}
 
+    // Update item size by id
+    updateItemSize: (state, action) => {
+      const { id, size } = action.payload;
+      const item = state.items.find(item => item.id === id);
+      if (item) {
+        item.size = size;
+      }
+    }
   },
 });
 
@@ -82,7 +83,7 @@ export const {
   removeItem,
   clearCart,
   setCartItemsFromDB,
-  updateItemSize
+  updateItemSize,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
