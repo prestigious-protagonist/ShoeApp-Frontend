@@ -113,8 +113,8 @@ const PlaceOrder = () => {
       toast.success("Order placed successfully!");
       navigate('/orders');
     } catch (error) {
-      console.error("Order error:", error);
-      toast.error("Failed to place order.");
+      console.log(error);
+      toast.error(error.response.data.error.message);
     }
   };
 

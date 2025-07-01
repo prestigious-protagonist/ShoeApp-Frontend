@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
-
+import { useNavigate } from 'react-router-dom';
 const UploadImage = () => {
   const { shoeId } = useParams();
   const [variants, setVariants] = useState([]);
@@ -13,7 +13,7 @@ const UploadImage = () => {
   const [error, setError] = useState(null);
   const [imageUrls, setImageUrls] = useState({});
   const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
-
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchVariants = async () => {
       try {
@@ -66,8 +66,9 @@ const UploadImage = () => {
       );
 
       if (res.data?.success) {
-        toast.success('✅ Image uploaded!');
+        toast.success('Image uploaded!');
         setImageUrls((prev) => ({ ...prev, [variantId]: '' }));
+        navigate('/admin/uploads')
       } else {
         toast.error('❌ Upload failed');
       }

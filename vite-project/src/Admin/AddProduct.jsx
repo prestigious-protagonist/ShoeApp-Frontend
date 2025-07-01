@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { toast } from 'react-toastify';
-
+import { useNavigate } from 'react-router-dom';
 // ✅ Sample top brands (you can extend this up to 100)
 const topBrands = [
   "Nike", "Adidas", "Puma", "Reebok", "Bata", "Woodland", "Skechers",
@@ -23,7 +23,7 @@ const AddProduct = () => {
   });
 
   const { getAccessTokenSilently } = useAuth0();
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -62,6 +62,7 @@ const AddProduct = () => {
         }
       );
       toast.success('Product added successfully!');
+      navigate('/admin/uploads')
       console.log('Response:', res.data);
     } catch (error) {
       toast.error('Failed to add product');
