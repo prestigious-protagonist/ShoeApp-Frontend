@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import { X } from 'lucide-react';
 import { updateItemSize } from '../utils/cartSlice'; // Adjust path as per your project
+import AddressForm from '../Components/AddressForm'
 
 const PlaceOrder = () => {
   const cartItems = useSelector((state) => state.cart.items);
@@ -171,7 +172,7 @@ const PlaceOrder = () => {
               </div>
             ))}
           </div>
-
+            <div>Blcok</div>
           <div className="bg-gray-100 p-4 rounded-md">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
@@ -191,7 +192,9 @@ const PlaceOrder = () => {
                 {couponApplied ? "Applied" : "Apply"}
               </button>
             </div>
-
+            <div>
+          <AddressForm userEmail={"userEmail"} />
+          </div>
             <div className="flex justify-between text-sm mb-2">
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
