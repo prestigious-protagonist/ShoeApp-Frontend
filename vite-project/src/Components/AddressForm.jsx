@@ -56,7 +56,7 @@ if (saved) {
     const token = await getAccessTokenSilently();
     try {
       await axios.post(
-        'http://localhost:3010/verificationService/api/get-otp',
+        `${import.meta.env.VITE_API_BASE_URL}/verificationService/api/get-otp`,
         { email: user.email },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +71,7 @@ if (saved) {
   const token = await getAccessTokenSilently();
   try {
     const res = await axios.post(
-      'http://localhost:3010/verificationService/api/verify-otp',
+      `${import.meta.env.VITE_API_BASE_URL}/verificationService/api/verify-otp`,
       {
         email: user.email,
         otp,

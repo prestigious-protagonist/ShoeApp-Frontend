@@ -19,7 +19,7 @@ const UploadImage = () => {
       try {
         const token = await getAccessTokenSilently();
         const res = await axios.get(
-          `http://localhost:3010/productService/api/v1/get-variants-by-shoeId/${shoeId}`,
+          `${import.meta.env.VITE_API_BASE_URL}/productService/api/v1/get-variants-by-shoeId/${shoeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ const UploadImage = () => {
       };
 
       const res = await axios.post(
-        'http://localhost:3010/productService/api/v1/uploadImage',
+        `${import.meta.env.VITE_API_BASE_URL}/productService/api/v1/uploadImage`,
         body,
         {
           headers: {

@@ -52,7 +52,7 @@ const AddProduct = () => {
     try {
       const token = await getAccessTokenSilently();
       const res = await axios.post(
-        'http://localhost:3010/productService/api/v1/addProduct',
+        `${import.meta.env.VITE_API_BASE_URL}/productService/api/v1/addProduct`,
         finalData,
         {
           headers: {
