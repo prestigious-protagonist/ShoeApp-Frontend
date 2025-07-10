@@ -11,29 +11,36 @@ const statesList = [
   'Punjab', 'Rajasthan', 'Tamil Nadu', 'Uttar Pradesh', 'West Bengal'
 ];
 
-const AddressForm = ({ userEmail }) => {
+const AddressForm = ({ userEmail, onAddressChange }) => {
   const [formData, setFormData] = useState({
     state: '',
     phone: '',
     flatNumber: '',
     locality: '',
     city: '',
+    email: ''
   });
 
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isEditing, setIsEditing] = useState(true); // controls field freeze/edit
+const [shippingAddress, setShippingAddress] = useState(null);
 
   const { getAccessTokenSilently, user } = useAuth0();
 
-  useEffect(() => {
-    const saved = localStorage.getItem('addressData');
-const verifiedFlag = localStorage.getItem('isEmailVerified');
+useEffect(() => {
+    if (isVerified && onAddressChange) {
+      onAddressChange(formData);
+    }
+  }, [isVerified, formData, onAddressChange]);
+    useEffect(() => {
+      const saved = localStorage.getItem('addressData');
+  const verifiedFlag = localStorage.getItem('isEmailVerified');
 
 if (saved) {
   const parsed = JSON.parse(saved);
-  setFormData(parsed);
+  setFormData({...parsed, email: user.email});
   setIsVerified(verifiedFlag === 'true');  // ✅ fix
   setIsEditing(!(verifiedFlag === 'true')); // freeze if verified
 }

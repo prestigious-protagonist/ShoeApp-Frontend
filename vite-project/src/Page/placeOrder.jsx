@@ -13,6 +13,7 @@ const PlaceOrder = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { getAccessTokenSilently } = useAuth0();
+const [shippingAddress, setShippingAddress] = useState(null);
 
   const [couponCode, setCouponCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -76,6 +77,11 @@ const PlaceOrder = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (!shippingAddress || !shippingAddress.flatNumber || !shippingAddress.city || !shippingAddress.state) {
+      toast.error("Please complete your verified address before placing the order.");
+      return;
+    }
+
     if (cartItems.length === 0) {
       toast.warning("Cart is empty. Add items before placing an order.");
       return;
@@ -100,7 +106,8 @@ const PlaceOrder = () => {
         })),
         price: total,
         discountPercentage: discountPercent,
-        couponCode: couponApplied ? couponCode : undefined
+        couponCode: couponApplied ? couponCode : undefined,
+        address: shippingAddress,
       };
 
       await axios.post(
@@ -193,7 +200,7 @@ const PlaceOrder = () => {
               </button>
             </div>
             <div>
-          <AddressForm userEmail={"userEmail"} />
+          <AddressForm userEmail={"userEmail"} onAddressChange={setShippingAddress} />
           </div>
             <div className="flex justify-between text-sm mb-2">
               <span>Subtotal</span>

@@ -25,6 +25,8 @@ import {
     { name: 'About', href: '/about', current: false },
     { name: 'Orders', href: '/orders', current: false },    
     { name: 'Contacts', href: '/contact', current: false },
+    { name: 'Admin', href: '/admin/uploads', current: false },
+    
     { name: 'Status', href: '/', current: true}
   ];
   
