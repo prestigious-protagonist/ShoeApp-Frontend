@@ -22,7 +22,7 @@ import AdminRoute from "./Admin/AdminProtectedRoute"
 import MyUploads from "./Admin/MyUploads"
 import AddProduct from "./Admin/AddProduct"
 import VariantInput from "./Admin/VariantInput"
-import UploadImage from "./Admin/uploadImage"
+import UploadImage from "./Admin/UploadImage"
 function App() {
   
   return (
