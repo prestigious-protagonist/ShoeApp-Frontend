@@ -6,15 +6,15 @@ import CardContent from '@mui/joy/CardContent';
 import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import { Navigate, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+//import axios from 'axios';
 
-import { useAuth0 } from '@auth0/auth0-react';
-import { toast } from 'react-toastify';
+//import { useAuth0 } from '@auth0/auth0-react';
+//import { toast } from 'react-toastify';
 
 const AdminUploadsCard = ({ name, brand, category, price, color, imageUrl, productId, isAdmin }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef();
-  const { getAccessTokenSilently} = useAuth0();
+  //const { getAccessTokenSilently} = useAuth0();
     const navigate = useNavigate();
   useEffect(() => {
     const handler = (e) => {
@@ -25,26 +25,26 @@ const AdminUploadsCard = ({ name, brand, category, price, color, imageUrl, produ
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-  async function handleDelete(productId) {
-  try {
-    const token = await getAccessTokenSilently();
-    console.log("DEEEEEEEEEEEEEEEKHHHHH "+ token)
-    const response = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/productService/api/v1/removeProduct`, {
-    data: { shoeId: productId },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-    setTimeout(() => {
-      window.location.reload(); // Hard refresh
-    }, 1000);
-    toast.success("Product deleted successfully!");
-    console.log("Delete response:", response.data);
-  } catch (error) {
-    console.error("Delete error:", error);
-    toast.error(error.response?.data?.message || "Failed to delete the product.");
-  }
-}
+//   async function handleDelete(productId) {
+//   try {
+//     const token = await getAccessTokenSilently();
+//     console.log("DEEEEEEEEEEEEEEEKHHHHH "+ token)
+//     const response = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/productService/api/v1/removeProduct`, {
+//     data: { shoeId: productId },
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+//     setTimeout(() => {
+//       window.location.reload(); // Hard refresh
+//     }, 1000);
+//     toast.success("Product deleted successfully!");
+//     console.log("Delete response:", response.data);
+//   } catch (error) {
+//     console.error("Delete error:", error);
+//     toast.error(error.response?.data?.message || "Failed to delete the product.");
+//   }
+// }
   const handleOptionClick = async (option) => {
     setMenuOpen(false);
     switch (option) {
@@ -55,12 +55,12 @@ const AdminUploadsCard = ({ name, brand, category, price, color, imageUrl, produ
       case "add-image":
         navigate(`variants/${productId}`)
         break;
-      case "edit":
-        alert(`Edit Product ${productId}`);
-        break;
-      case "delete":
-        await handleDelete(productId);
-        break;
+      // case "edit":
+      //   alert(`Edit Product ${productId}`);
+      //   break;
+      // case "delete":
+      //   await handleDelete(productId);
+      //   break;
       default:
         break;
     }
