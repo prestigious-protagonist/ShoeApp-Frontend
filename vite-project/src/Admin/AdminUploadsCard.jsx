@@ -117,18 +117,7 @@ const AdminUploadsCard = ({ name, brand, category, price, color, imageUrl, produ
                 >
                   🖼️ Add Image
                 </li>
-                <li
-                  onClick={() => handleOptionClick('edit')}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                >
-                  ✏️ Edit Product
-                </li>
-                <li
-                  onClick={() => handleOptionClick('delete')}
-                  className="px-4 py-2 hover:bg-red-100 text-red-600 cursor-pointer"
-                >
-                  🗑️ Delete
-                </li>
+                
               </ul>
             </div>
           )}
